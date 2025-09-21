@@ -1,0 +1,42 @@
+https://www.geeksforgeeks.org/problems/detect-cycle-in-an-undirected-graph/1
+
+class Solution {
+  public:
+    class Node{
+        public:
+        int p=-1;
+        int rank=0;
+        Node(int p_){
+            p=p_;
+        }
+    };
+    int findParent(int a, vector<Node*>& parent){
+        if(parent[a]->p==a)return a;
+        return parent[a]->p=findParent(parent[a]->p,parent);
+    }
+    void doUnion(int a, int b, vector<Node*>&parent){
+        if(parent[a]->rank > parent[b]->rank)parent[b]->p = a;
+        else if(parent[a]->rank < parent[b]->rank)parent[a]->p = b;
+        else{
+            parent[b]->p = a;
+            parent[a]->rank++;
+        }
+    }
+    bool checkCycle(int n, vector<vector<int>>& edges,vector<Node*>& parent){
+        for(int i=0 ; i<edges.size() ; i++){
+            int a = findParent(edges[i][0],parent);
+            int b = findParent(edges[i][1],parent);
+            if(a==b)return true;
+            doUnion(a,b,parent);
+        } 
+        return false;
+    }
+    bool isCycle(int n, vector<vector<int>>& edges) {
+        vector<Node*> parent;
+        for(int i=0 ; i<n ; i++){
+            Node* temp = new Node(i);
+            parent.push_back(temp);
+        }
+        return checkCycle(n,edges,parent);
+    }
+};
